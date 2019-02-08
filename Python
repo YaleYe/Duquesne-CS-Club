@@ -1,0 +1,97 @@
+import requests
+import os
+import sys
+from bs4 import BeautifulSoup
+import random
+import re
+#Search google method takes a string and return the info related to the string
+#pictureSaver method takes a url and convert into binary code and save image in disk
+#ip tracking method takes user input to track the ip address and return related information of the ip address
+class playHTML:
+
+
+    def searchGoogle(item):
+        try:
+
+            url ="https://www.google.com/search?q="+item
+            print(url)
+            r = requests.get(url,timeout = 30)
+            r.raise_for_status()  #check connection
+            print("Your searching item :"+ item)
+            r.encoding = r.apparent_encoding
+            print(len(r.text))   #return length of content
+            print (r.json)       #return json info
+            return r.text
+        except:
+            print("Search can't be processed")
+
+
+    def pictureSaver(url):
+        root = "C:/ImageSaver/"
+        path = root + url.split("/")[-1]
+        searchItem = "school"
+        r = requests.get(url)
+        try:
+            if not os.path.exists(root):
+                os.mkdir(root)
+            if not os.path.exists(path):
+                r = requests.get(url)
+                print(path)
+                with open(path,'wb') as f:
+                    f.write(r.content)
+                    f.close()
+                    print("Picture saved")
+            else:
+                print("File existed")
+        except:
+            print("picture saved failed")
+
+
+    def imageURLList(item):
+        urlList = []
+        content = playHTML.searchGoogle(item)
+        soup = BeautifulSoup(content,"html.parser")
+        container = soup.findAll("div")
+
+
+        print(container[1])
+
+
+
+    def ipTracking():
+        #IP = input("Enter your IP address: ")
+        IP = "181.8.8.8"
+        debug = {'verbose': sys.stderr}
+        #randomize user-agent
+        userAgentList = ['Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
+                         'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36',
+                         'Opera/9.80 (X11; Linux i686; U; ru) Presto/2.8.131 Version/11.11',
+                         'Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11']
+        userAgent = random.choice(userAgentList)
+        userAgent = {'User-agent': str(random.choice(userAgentList))} #implement user-agent
+
+        try:
+            url = "https://www.ip-tracker.org/locator/ip-lookup.php?ip="+IP
+            print(url)
+            r = requests.get(url,headers =userAgent)
+            r.encoding = r.apparent_encoding
+            print(r.json)
+            content = r.text
+            soup = BeautifulSoup(content,"html.parser")
+            container = soup.findAll("td", {"class": "tracking"})  #contain main infomation
+            infoList = ["hello: ","IP: ","Country: ","Capital: ","State: ","Organization","Time Zone","Time Zone GMT offset: ","Latitude/ Longitude: ","city latitude/longitude: ","ip address: ","IDD Code: "]
+            listLength = len(container)
+            for index in range(listLength):
+                print(infoList[index]+ str(container[index].string))
+        except:
+            return ("Tracking failed")
+
+
+item = "fog"
+playHTML.imageURLList(item)
+
+
+
+
+
+
