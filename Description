@@ -1,0 +1,7 @@
+Amazon Search:
+  using request to fetch the data(items and prices) from amazon page and filter out the data using beautiful shop package
+  
+IP tracking:
+  using request library to fetch data from ip address lookup website and beautifulsoup to filter the data
+  
+language: python
