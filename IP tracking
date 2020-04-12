@@ -1,0 +1,39 @@
+#Author: Yale Ye
+#last_Motified: Feb.11.2019
+#Program Requirements: This program requires external library requests,bs4 and built-in library bs4,sys,random
+#This program use Web scraping techique to receive information and return the precise information from the internet
+
+import requests
+import sys
+from bs4 import BeautifulSoup
+import random
+#last_Motified: Feb.11.2019
+
+def ipTracking():
+        IP = input("Enter your IP address: ")
+        debug = {'verbose': sys.stderr}
+        #randomize user-agent
+        userAgentList = ['Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
+                         'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36',
+                         'Opera/9.80 (X11; Linux i686; U; ru) Presto/2.8.131 Version/11.11',
+                         'Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11']
+        userAgent = random.choice(userAgentList)
+        userAgent = {'User-agent': str(random.choice(userAgentList))} #implement user-agent
+
+        try:
+            url = "https://www.ip-tracker.org/locator/ip-lookup.php?ip="+IP
+            print(url)
+            r = requests.get(url,headers =userAgent)
+            r.encoding = r.apparent_encoding
+            print(r.json)
+            content = r.text
+            soup = BeautifulSoup(content,"html.parser")
+            container = soup.findAll("td", {"class": "tracking"})  #contain main infomation
+            infoList = ["hello: ", "HostName: ", "Country: ", "Capital: ", "State: ", "Postal: ", "Organization","Time Zone: ",
+                        "Latitude/ Longitude: ", "Timezone GMT offset: ", "City Lat/Lon: ", "IDD Code: "]
+            listLength = len(container)
+            for index in range(listLength):
+                print(infoList[index]+ str(container[index].string))
+        except:
+            return "Tracking failed"
+ipTracking()
